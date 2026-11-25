@@ -3,9 +3,10 @@
 
 /* ---------- Colores y medidas, en un solo lugar ---------- */
 :root {
-    --indigo: #312E81;        /* cabecera y títulos */
-    --indigo-claro: #EEF2FF;  /* fondos y líneas suaves */
-    --acento: #4F46E5;        /* enlaces y botones */
+    --celeste: #7DD3FC;       /* fondo de la cabecera */
+    --azul: #0C4A6E;          /* texto de la cabecera y títulos (sobre el celeste: 5,7:1) */
+    --celeste-claro: #E0F2FE; /* fondos y líneas suaves */
+    --acento: #0369A1;        /* enlaces y botones (texto blanco encima: 5,9:1) */
     --ok: #15803D;            /* mensajes de éxito */
     --ok-claro: #DCFCE7;
     --error: #B91C1C;         /* errores y la baja */
@@ -13,7 +14,7 @@
     --texto: #1F2937;         /* texto principal */
     --gris: #5B6472;          /* texto secundario */
     --linea: #D9DEE7;         /* bordes de la tabla y los campos */
-    --fondo: #F4F6FB;         /* fondo de la página */
+    --fondo: #F3F8FC;         /* fondo de la página */
     --blanco: #FFFFFF;
     --radio: 10px;            /* esquinas redondeadas */
 }
@@ -28,35 +29,35 @@ body {
     background: var(--fondo);
 }
 a { color: var(--acento); }
-h1, h2 { color: var(--indigo); line-height: 1.2; }
+h1, h2 { color: var(--azul); line-height: 1.2; }
 /* oculto a la vista, pero lo leen los lectores de pantalla */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- Cabecera y menú ---------- */
-.cabecera { background: var(--indigo); color: var(--blanco); padding: 12px 16px; }
+.cabecera { background: var(--celeste); color: var(--azul); padding: 12px 16px; }
 .cabecera__marca { display: flex; align-items: center; gap: 12px; }
 .cabecera__sigla {
     display: grid; place-items: center;       /* centra la sigla en el círculo */
     width: 46px; height: 46px; border-radius: 50%;
-    background: var(--blanco); color: var(--indigo); font-weight: 800; letter-spacing: .04em;
+    background: var(--azul); color: var(--blanco); font-weight: 800; letter-spacing: .04em;
 }
 .cabecera__marca strong { display: block; font-size: 1.05rem; }
 .cabecera__marca span { font-size: .85rem; opacity: .85; }
 .menu { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }   /* si no entra, baja de renglón */
 .menu a {
-    color: var(--blanco); text-decoration: none;
+    color: var(--azul); text-decoration: none;
     padding: 6px 12px; border-radius: 999px;  /* forma de píldora */
-    background: rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .55);
 }
-.menu a:hover { background: rgba(255, 255, 255, .25); }
+.menu a:hover { background: var(--blanco); }
 /* la página abierta (aria-current lo pone es_actual() en PHP) */
-.menu a[aria-current="page"] { background: var(--blanco); color: var(--indigo); font-weight: 700; }
+.menu a[aria-current="page"] { background: var(--azul); color: var(--blanco); font-weight: 700; }
 
 /* ---------- Contenido ---------- */
 .contenido { max-width: 960px; margin: 0 auto; padding: 20px 16px 40px; }   /* centrado y con aire */
 .titular { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .bajada { color: var(--gris); }
-.tarjeta { background: var(--blanco); border-radius: var(--radio); padding: 16px; box-shadow: 0 1px 4px rgba(49, 46, 129, .12); }
+.tarjeta { background: var(--blanco); border-radius: var(--radio); padding: 16px; box-shadow: 0 1px 4px rgba(12, 74, 110, .14); }
 
 /* ---------- Botones ---------- */
 .boton {
@@ -64,7 +65,7 @@ h1, h2 { color: var(--indigo); line-height: 1.2; }
     background: var(--acento); color: var(--blanco); text-decoration: none;
     font: inherit; font-weight: 700; padding: 8px 16px; border-radius: 999px;
 }
-.boton:hover { background: var(--indigo); }
+.boton:hover { background: var(--azul); }
 .boton--peligro { background: var(--error); }
 .boton--peligro:hover { background: #7F1D1D; }
 
@@ -77,8 +78,8 @@ h1, h2 { color: var(--indigo); line-height: 1.2; }
 .tabla-scroll { overflow-x: auto; }   /* en el celular, la tabla se desliza en vez de romper la página */
 .tabla { width: 100%; border-collapse: collapse; background: var(--blanco); border-radius: var(--radio); overflow: hidden; }
 .tabla th, .tabla td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--linea); white-space: nowrap; }
-.tabla thead th { background: var(--indigo-claro); color: var(--indigo); font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
-.tabla tbody tr:hover { background: #FAFBFF; }
+.tabla thead th { background: var(--celeste-claro); color: var(--azul); font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+.tabla tbody tr:hover { background: #F5FBFF; }
 .acciones { display: flex; gap: 12px; }
 .peligro { color: var(--error); }
 
@@ -90,7 +91,7 @@ h1, h2 { color: var(--indigo); line-height: 1.2; }
     font: inherit; padding: 8px 10px;
     border: 2px solid var(--linea); border-radius: 8px; background: var(--blanco);
 }
-.campo input:focus { outline: 3px solid var(--indigo-claro); border-color: var(--acento); }
+.campo input:focus { outline: 3px solid var(--celeste); border-color: var(--acento); }
 .error { margin: 0; color: var(--error); font-size: .9rem; font-weight: 600; }
 .error:empty { display: none; }   /* sin mensaje, el párrafo no ocupa lugar */
 /* el campo con error (aria-invalid lo pone validar.js) */
@@ -103,10 +104,10 @@ h1, h2 { color: var(--indigo); line-height: 1.2; }
 .sesion { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: .9rem; }
 .sesion span { opacity: .9; }
 .sesion button {
-    font: inherit; cursor: pointer; color: var(--blanco);
-    background: transparent; border: 1.5px solid rgba(255, 255, 255, .6); border-radius: 999px; padding: 3px 12px;
+    font: inherit; cursor: pointer; color: var(--azul);
+    background: transparent; border: 1.5px solid var(--azul); border-radius: 999px; padding: 3px 12px;
 }
-.sesion button:hover { background: rgba(255, 255, 255, .15); }
+.sesion button:hover { background: rgba(255, 255, 255, .55); }
 
 /* ---------- Buscador en vivo ---------- */
 .buscador { max-width: 420px; margin: 16px 0 4px; }
