@@ -1,3 +1,12 @@
 <?php
-// index.php: por ahora, solo para probar que Apache sirve public/
-echo 'Gestión Escolar: Apache sirve la carpeta public/';
+// index.php: inicio: cada rol va a su página principal
+require __DIR__ . '/../src/funciones.php';
+
+// Sin login, al login (exigir_login() corta acá)
+exigir_login();
+
+// match: elige el destino según el rol; el docente carga notas y los demás ven alumnos
+redirigir(match (usuario_actual()['rol']) {
+    'docente' => 'notas.php',
+    default   => 'alumnos.php',
+});

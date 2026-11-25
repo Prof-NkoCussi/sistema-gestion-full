@@ -67,7 +67,10 @@ function iniciar_sesion(): void
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
-    // Cómo es la cookie de sesión (PHPSESSID) que se manda al navegador
+    // Nombre propio para la cookie: el sistema de docentes, en el mismo servidor, usa PHPSESSID
+    // Con el mismo nombre, las dos aplicaciones compartirían la sesión (y el usuario que entró)
+    session_name('ESCUELA');
+    // Cómo es la cookie de sesión que se manda al navegador
     session_set_cookie_params([
         'lifetime' => 0,                         // 0 = se borra al cerrar el navegador
         'httponly' => true,                      // JavaScript no la puede leer: un XSS no la roba
