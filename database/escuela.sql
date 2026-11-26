@@ -77,6 +77,7 @@ CREATE TABLE notas (
 INSERT INTO cursos (id, anio, division, nombre) VALUES
   (1, 4, 1, '4° 1ª'),
   (2, 5, 1, '5° 1ª'),
+  (4, 6, 1, '6° 1ª'),
   (3, 7, 1, '7° 1ª');
 
 INSERT INTO materias (id, nombre, anio) VALUES
@@ -93,7 +94,7 @@ INSERT INTO materias (id, nombre, anio) VALUES
   (11, 'Taller de Ingeniería', 7),
   (12, 'Práctica Profesionalizante', 7);
 
--- Doce alumnos ficticios, cuatro por curso
+-- Dieciséis alumnos ficticios, cuatro por curso
 INSERT INTO alumnos (id, dni, apellido, nombre, curso_id) VALUES
   (1, '50123456', 'Acosta', 'Valentina', 1),
   (2, '50234567', 'Domínguez', 'Tomás', 1),
@@ -106,9 +107,14 @@ INSERT INTO alumnos (id, dni, apellido, nombre, curso_id) VALUES
   (9, '47123456', 'Cabrera', 'Martina', 3),
   (10, '47234567', 'Gutiérrez', 'Facundo', 3),
   (11, '47345678', 'Pereyra', 'Abril', 3),
-  (12, '47456789', 'Rojas', 'Thiago', 3);
+  (12, '47456789', 'Rojas', 'Thiago', 3),
+  (13, '48123456', 'Herrera', 'Lautaro', 4),
+  (14, '48234567', 'Ibáñez', 'Delfina', 4),
+  (15, '48345678', 'Luna', 'Santino', 4),
+  (16, '48456789', 'Sánchez', 'Morena', 4);
 
 -- Notas del 1.er y 2.º trimestre: (alumno, materia, trimestre, nota)
+-- Los de 6° 1ª no tienen: sus notas las carga el docente desde el sistema
 INSERT INTO notas (alumno_id, materia_id, trimestre, nota) VALUES
   (1, 1, 1, 8), (1, 2, 1, 9), (1, 3, 1, 7), (1, 1, 2, 9), (1, 2, 2, 9), (1, 3, 2, 8),
   (2, 1, 1, 6), (2, 2, 1, 5), (2, 3, 1, 7), (2, 1, 2, 7), (2, 2, 2, 6), (2, 3, 2, 7),
