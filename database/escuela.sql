@@ -55,16 +55,16 @@ CREATE TABLE materias (
   UNIQUE KEY uq_materias_nombre (nombre)
 ) ENGINE=InnoDB;
 
--- Notas: una por alumno, materia y trimestre
+-- Notas: una por alumno, materia y cuatrimestre
 CREATE TABLE notas (
   id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
   alumno_id   INT UNSIGNED NOT NULL,
   materia_id  SMALLINT UNSIGNED NOT NULL,
-  trimestre   TINYINT UNSIGNED NOT NULL,
+  cuatrimestre TINYINT UNSIGNED NOT NULL,
   nota        TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE KEY uq_notas_alumno_materia_trimestre (alumno_id, materia_id, trimestre),
-  CONSTRAINT chk_notas_trimestre CHECK (trimestre BETWEEN 1 AND 3),
+  UNIQUE KEY uq_notas_alumno_materia_cuatrimestre (alumno_id, materia_id, cuatrimestre),
+  CONSTRAINT chk_notas_cuatrimestre CHECK (cuatrimestre BETWEEN 1 AND 2),
   CONSTRAINT chk_notas_nota CHECK (nota BETWEEN 1 AND 10),   -- la última barrera: 11 no entra
   CONSTRAINT fk_notas_alumno FOREIGN KEY (alumno_id)
     REFERENCES alumnos(id) ON DELETE CASCADE,             -- si se borra el alumno, se borran sus notas
@@ -113,9 +113,9 @@ INSERT INTO alumnos (id, dni, apellido, nombre, curso_id) VALUES
   (15, '48345678', 'Luna', 'Santino', 4),
   (16, '48456789', 'Sánchez', 'Morena', 4);
 
--- Notas del 1.er y 2.º trimestre: (alumno, materia, trimestre, nota)
+-- Notas del 1.er y 2.º cuatrimestre: (alumno, materia, cuatrimestre, nota)
 -- Los de 6° 1ª no tienen: sus notas las carga el docente desde el sistema
-INSERT INTO notas (alumno_id, materia_id, trimestre, nota) VALUES
+INSERT INTO notas (alumno_id, materia_id, cuatrimestre, nota) VALUES
   (1, 1, 1, 8), (1, 2, 1, 9), (1, 3, 1, 7), (1, 1, 2, 9), (1, 2, 2, 9), (1, 3, 2, 8),
   (2, 1, 1, 6), (2, 2, 1, 5), (2, 3, 1, 7), (2, 1, 2, 7), (2, 2, 2, 6), (2, 3, 2, 7),
   (3, 1, 1, 10), (3, 2, 1, 9), (3, 3, 1, 9), (3, 1, 2, 9), (3, 2, 2, 10), (3, 3, 2, 10),
