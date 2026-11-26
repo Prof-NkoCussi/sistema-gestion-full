@@ -3,6 +3,7 @@
 <!-- TECNOLOGÍAS -->
 ![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)
+![MariaDB](https://img.shields.io/badge/MariaDB-XAMPP-003545?logo=mariadb&logoColor=white)
 ![PDO](https://img.shields.io/badge/PDO-Database-4479A1)
 ![Apache](https://img.shields.io/badge/Apache-2.4-D22128?logo=apache&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=black)
@@ -67,7 +68,7 @@ Incluye un sistema de **autenticación con tres roles de usuario** (admin, prece
 
 | Tema | Cómo se resuelve |
 |---|---|
-| Carpetas | Apache sirve **solo `public/`** (con un `Alias` en `config/escuela.conf`). `config/`, `src/`, `database/` y `scripts/` quedan fuera de la web |
+| Carpetas | En el servidor, Apache sirve **solo `public/`** (con un `Alias` en `config/escuela.conf`). `config/`, `src/`, `database/` y `scripts/` quedan fuera de la web. En XAMPP, donde se publica toda la carpeta, un `index.php` en la raíz manda a `public/` y esas cuatro carpetas tienen un `.htaccess` con `Require all denied` (403) |
 | Conexión | **PDO** con `utf8mb4`, errores como excepciones (`ERRMODE_EXCEPTION`) y consultas preparadas nativas de MySQL |
 | Contraseña de la base | En `config/config.php`, que **no está en el repositorio** (`.gitignore`). En el repo va `config.ejemplo.php` como modelo |
 | Usuario de la base | `app_escuela`, con permisos mínimos (`SELECT`, `INSERT`, `UPDATE`, `DELETE`): la aplicación nunca se conecta como root |
@@ -75,10 +76,10 @@ Incluye un sistema de **autenticación con tres roles de usuario** (admin, prece
 | Roles | `exigir_rol(['admin', 'docente'])` al principio de cada página: sin login, al login; sin permiso, 403 |
 | Inyección SQL | Todo dato de afuera va en **consultas preparadas**. Cursos, materias y cuatrimestres pasan además por una **lista blanca** |
 | XSS | En PHP, todo lo que se muestra pasa por `e()` (`htmlspecialchars`). En JavaScript, los datos se escriben con `textContent`, nunca con `innerHTML` |
-| Notas | `INSERT … ON DUPLICATE KEY UPDATE` sobre el índice `UNIQUE` (alumno, materia, cuatrimestre), dentro de una **transacción**: se guardan todas o ninguna. La base además tiene `CHECK (nota BETWEEN 1 AND 10)` |
+| Notas | `INSERT … ON DUPLICATE KEY UPDATE nota = :nota_nueva` (forma que aceptan MySQL y MariaDB) sobre el índice `UNIQUE` (alumno, materia, cuatrimestre), dentro de una **transacción**: se guardan todas o ninguna. La base además tiene `CHECK (nota BETWEEN 1 AND 10)` |
 | Promedios | `AVG(n.nota)` con `GROUP BY a.id, n.cuatrimestre` y `LEFT JOIN`, para que el alumno sin notas también aparezca. Se redondea una sola vez, al mostrar |
 | CSV | `fputcsv` sobre `php://output`, con BOM de UTF-8, punto y coma como separador y coma decimal. Un texto que empieza con `=`, `+`, `-` o `@` lleva un apóstrofo adelante, para que Excel no lo tome como fórmula |
-| Buscador | `fetch` + `async/await` a `api/alumnos.php`, que responde JSON (y 401 o 403 en JSON, no la página de login). Espera 300 ms después de la última tecla: una búsqueda es un solo pedido. La base es `utf8mb4_0900_ai_ci`, que no distingue tildes |
+| Buscador | `fetch` + `async/await` a `api/alumnos.php`, que responde JSON (y 401 o 403 en JSON, no la página de login). Espera 300 ms después de la última tecla: una búsqueda es un solo pedido. La base es `utf8mb4_unicode_ci`, que no distingue tildes y funciona en MySQL y en MariaDB |
 | JavaScript | Mejora la página, pero no la reemplaza: sin JavaScript los formularios funcionan igual y PHP vuelve a validar todo |
 | Git | Una función por commit. El buscador se hizo en la rama `feature/buscador` y se unió a `main` con un merge *fast-forward* |
 
@@ -88,10 +89,15 @@ El código tiene comentarios para facilitar la lectura de cada sección.
 
 ```
 sistema-gestion-full/
+├── instalar-xampp.bat        instala todo en XAMPP con doble clic (solo para probar)
+├── index.php                 en XAMPP, manda a public/
 ├── config/
 │   ├── config.ejemplo.php    modelo de configuración (copiar como config.php)
+│   ├── config.xampp.php      configuración de demo para XAMPP
 │   └── escuela.conf          Alias de Apache: /escuela → public/
-├── database/escuela.sql      esquema de la base y datos de prueba
+├── database/
+│   ├── escuela.sql           esquema de la base y datos de prueba
+│   └── demo_xampp.sql        usuario de la base y usuarios de demo, solo para XAMPP
 ├── scripts/crear_usuario.php crea usuarios desde la terminal, con password_hash
 ├── src/
 │   ├── conexion.php          conectar(): la conexión PDO
@@ -122,9 +128,30 @@ sistema-gestion-full/
 
 Las claves foráneas cuidan los datos: no se puede borrar un curso con alumnos (`RESTRICT`) y si se da de baja un alumno se borran sus notas (`CASCADE`).
 
+## Probarlo en XAMPP (Windows)
+
+Para probar el sistema en la propia PC, sin configurar nada a mano.
+
+1. Descargar el zip (botón verde **Code**, **Download ZIP**) y descomprimirlo en `C:\xampp\htdocs\`. Queda la carpeta `sistema-gestion-full-main`; se le puede sacar el `-main`.
+2. Arrancar **Apache** y **MySQL** desde el panel de XAMPP.
+3. Doble clic en `instalar-xampp.bat`. Crea la base `escuela` con los datos de prueba (si ya existía, la borra), el usuario de la base `app_escuela` y los usuarios de demo, y copia `config\config.xampp.php` como `config\config.php`.
+4. Abrir la dirección que muestra al terminar: `http://localhost/sistema-gestion-full/` (o con el nombre que haya quedado la carpeta).
+
+| Usuario | Contraseña | Rol |
+|---|---|---|
+| `admin` | `Admin-Demo-2026` | admin: puede todo |
+| `preceptor1` | `Preceptor-Demo-2026` | preceptor: maneja los alumnos |
+| `docente1` | `Docente-Demo-2026` | docente: carga las notas |
+
+> **Solo para probar en la propia PC.** Estas contraseñas son públicas. `database/demo_xampp.sql` y `config/config.xampp.php` no se usan en un servidor: ahí la instalación es la de LAMP, con usuarios creados con `crear_usuario.php` y contraseñas que no están en ningún archivo.
+
+Sin el instalador, a mano: en phpMyAdmin (`http://localhost/phpmyadmin`), pestaña **Importar**, cargar `database/escuela.sql` y después `database/demo_xampp.sql`; copiar `config\config.xampp.php` como `config\config.php`.
+
+Si XAMPP no está en `C:\xampp` o el usuario `root` de MySQL tiene contraseña, el instalador lo avisa y dice qué línea cambiar.
+
 ## Instalación en un servidor LAMP (Ubuntu)
 
-Requisitos: Apache 2.4, PHP 8.1 o superior con `pdo_mysql` (paquete `php-mysql`) y MySQL 8.0.19 o superior.
+Requisitos: Apache 2.4, PHP 8.1 o superior con `pdo_mysql` (paquete `php-mysql`) y MySQL 8.0 o superior.
 
 1. Clonar el repositorio en `/var/www/sistema-gestion-full` y darle el grupo de Apache:
    ```bash
@@ -158,14 +185,6 @@ Requisitos: Apache 2.4, PHP 8.1 o superior con `pdo_mysql` (paquete `php-mysql`)
    php scripts/crear_usuario.php docente1 docente
    ```
 7. Abrir `http://IP-DEL-SERVIDOR/escuela/`.
-
-## Instalación en XAMPP (Windows)
-
-1. Copiar la carpeta en `C:\xampp\htdocs\sistema-gestion-full` y arrancar Apache y MySQL desde el panel de XAMPP.
-2. En phpMyAdmin (`http://localhost/phpmyadmin`), pestaña **Importar**, cargar `database/escuela.sql`.
-3. Copiar `config\config.ejemplo.php` como `config\config.php` y completar el usuario y la contraseña. XAMPP trae `root` sin contraseña: sirve para practicar en la propia PC, nunca en un servidor.
-4. Crear el primer usuario: en el panel de XAMPP, botón **Shell**, entrar a la carpeta y correr `php scripts/crear_usuario.php admin admin`. En Windows la contraseña se ve mientras se escribe.
-5. Abrir `http://localhost/sistema-gestion-full/public/`.
 
 ## Licencia
 

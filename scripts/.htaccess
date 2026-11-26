@@ -1,0 +1,4 @@
+# scripts/.htaccess: en XAMPP Apache publica toda la carpeta del proyecto
+# Require all denied: nada de scripts/ se puede pedir desde el navegador (403)
+# En el servidor LAMP no hace falta: ahí Apache publica solo public/
+Require all denied

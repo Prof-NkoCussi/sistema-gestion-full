@@ -1,0 +1,2 @@
+# El instalador de Windows queda con fin de línea CRLF, sin conversiones
+*.bat -text
