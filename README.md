@@ -38,6 +38,7 @@ Incluye un sistema de **autenticación con tres roles de usuario** (admin, prece
 - **Buscador en vivo** por apellido, nombre o DNI: mientras se escribe, le pregunta al servidor y redibuja la tabla. Encuentra «Gutiérrez» escribiendo «gutierrez».
 - **Token CSRF** en todos los formularios POST: un pedido armado fuera del sistema se rechaza con 403.
 - **Backup automático** de la base: `scripts/backup.sh` hace la copia con `mysqldump`, la comprime y borra las de más de 7 días; `cron` lo corre todos los días.
+- **Diagnóstico del servidor**: `scripts/diagnostico.sh` muestra en una pantalla la red (IP, gateway y DNS, y si responden), el estado de Apache, MySQL, Samba y cron, las reglas del firewall, el espacio en disco y el último backup.
 
 ## Demo
 
@@ -101,7 +102,8 @@ sistema-gestion-full/
 │   └── demo_xampp.sql        usuario de la base y usuarios de demo, solo para XAMPP
 ├── scripts/
 │   ├── crear_usuario.php     crea usuarios desde la terminal, con password_hash
-│   └── backup.sh             copia de seguridad de la base (mysqldump + cron)
+│   ├── backup.sh             copia de seguridad de la base (mysqldump + cron)
+│   └── diagnostico.sh        estado del servidor: red, servicios, firewall, disco y backup
 ├── src/
 │   ├── conexion.php          conectar(): la conexión PDO
 │   ├── funciones.php         sesiones y roles, CSRF, validaciones, promedios, CSV, JSON
@@ -219,6 +221,41 @@ sudo mysql -e "CHECKSUM TABLE escuela.notas, escuela_prueba.notas"
 ```
 
 Si los dos números coinciden, la copia tiene los mismos datos. La base usa `utf8mb4_unicode_ci`, así que la copia también se puede cargar en MariaDB (XAMPP).
+
+## Diagnóstico del servidor
+
+`scripts/diagnostico.sh` revisa el servidor con un solo comando y marca cada punto con `[ OK  ]` o `[FALLA]`:
+
+- **Red:** placa, IP y si vino por DHCP; si responden el gateway y cada servidor DNS, y si el DNS traduce un nombre.
+- **Servicios:** `apache2`, `mysql`, `smbd` y `cron` activos.
+- **Firewall:** si `ufw` está activo y sus reglas.
+- **Disco:** uso de la partición principal (avisa desde el 80 %).
+- **Backup:** la copia más nueva de `/var/backups/escuela` (avisa si tiene más de 26 horas), la línea de cron y el último mensaje del registro.
+
+Se corre desde la carpeta del repo, con sudo (las reglas de `ufw` y la carpeta de los backups son solo de root):
+
+```bash
+sudo scripts/diagnostico.sh
+```
+
+Ejemplo de la parte de red en el servidor de prueba:
+
+```
+Diagnóstico de gestion-srv · 26/11/2026 17:37
+
+== Red ==
+  Placa:    enp0s3
+  IP:       192.168.1.29/24
+  Origen:   DHCP (la IP puede cambiar: conviene una reserva)
+  [ OK  ] Gateway 192.168.1.1 responde
+  [ OK  ] DNS 8.8.8.8 responde
+  [ OK  ] DNS 1.1.1.1 responde
+  [ OK  ] El DNS traduce google.com
+...
+Resultado: todo OK
+```
+
+Termina con código 0 si está todo bien y 1 si encontró algún problema, así se puede usar desde cron o desde otro script.
 
 ## Licencia
 
