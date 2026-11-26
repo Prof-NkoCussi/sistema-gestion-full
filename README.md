@@ -24,7 +24,7 @@ Desarrollado con **PHP**, **MySQL** y **JavaScript**, sobre una arquitectura **L
 
 Incluye un sistema de **autenticación con tres roles de usuario** (admin, preceptor y docente), operaciones **ABM de alumnos** (alta, baja y modificación), **carga de notas** por curso, materia y cuatrimestre, **promedios** con exportación en formato **CSV** compatible con Microsoft Excel, y un **buscador en vivo** que consulta al servidor con `fetch` y JSON.
 
-> Proyecto de práctica: todos los datos son ficticios.
+> **Proyecto de práctica.** Los alumnos, DNI, notas y usuarios son datos ficticios, creados solo para probar el sistema; las materias y los cursos son de ejemplo. No contiene datos reales de estudiantes: en un sistema escolar real, esos datos son personales y están protegidos por la Ley 25.326 de Protección de Datos Personales. No reemplaza ni está conectado a ningún sistema oficial de gestión escolar.
 
 ## Qué hace
 
