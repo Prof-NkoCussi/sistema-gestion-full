@@ -82,6 +82,9 @@ h1, h2 { color: var(--azul); line-height: 1.2; }
 .tabla tbody tr:hover { background: #F5FBFF; }
 .acciones { display: flex; gap: 12px; }
 .peligro { color: var(--error); }
+/* números (promedios): a la derecha y con cifras del mismo ancho, para que se alineen */
+.tabla .numero { text-align: right; font-variant-numeric: tabular-nums; }
+.tabla .final { font-weight: 700; color: var(--azul); }   /* la columna del promedio final, destacada */
 
 /* ---------- Formulario ---------- */
 .formulario { display: grid; gap: 14px; max-width: 560px; }

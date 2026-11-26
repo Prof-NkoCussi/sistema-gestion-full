@@ -220,3 +220,74 @@ function leer_nota(string $texto): ?int
     $nota = filter_var($texto, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 10]]);
     return $nota === false ? null : $nota;
 }
+
+
+// PROMEDIOS Y CSV //
+
+// leer_promedios(): el promedio de cada alumno en cada cuatrimestre, y el final
+// $curso_id: un curso, o null para todos. Devuelve una fila por alumno:
+// [7 => ['apellido' => 'Muñoz', 'nombre' => 'Joaquín', 'curso' => '5° 1ª',
+//        'promedios' => [1 => 5.0, 2 => 6.3333], 'final' => 5.6667]]
+function leer_promedios(PDO $pdo, ?int $curso_id): array
+{
+    // LEFT JOIN: el alumno sin notas también aparece (con cuatrimestre NULL)
+    // GROUP BY alumno y cuatrimestre: AVG() promedia las notas de cada grupo
+    // Sin ROUND: se redondea una sola vez, al mostrar (redondear antes de promediar suma error)
+    $sql = 'SELECT a.id, a.apellido, a.nombre, c.nombre AS curso,
+                   n.cuatrimestre, AVG(n.nota) AS promedio
+            FROM alumnos AS a
+            JOIN cursos AS c ON c.id = a.curso_id
+            LEFT JOIN notas AS n ON n.alumno_id = a.id';
+    $datos = [];
+    // El filtro se agrega solo si se eligió un curso (y el valor viaja aparte, preparado)
+    if ($curso_id !== null) {
+        $sql .= ' WHERE a.curso_id = :curso';
+        $datos['curso'] = $curso_id;
+    }
+    $sql .= ' GROUP BY a.id, n.cuatrimestre
+              ORDER BY c.anio, a.apellido, a.nombre, n.cuatrimestre';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($datos);
+
+    // Cada alumno llega en hasta 2 filas (una por cuatrimestre): se juntan en una
+    $alumnos = [];
+    foreach ($stmt as $f) {
+        // ??= : la primera vez que aparece el alumno se arma su fila, con los promedios vacíos
+        $alumnos[$f['id']] ??= ['apellido' => $f['apellido'], 'nombre' => $f['nombre'],
+                                'curso' => $f['curso'], 'promedios' => []];
+        // Sin notas, el cuatrimestre llega NULL: no hay promedio para guardar
+        if ($f['cuatrimestre'] !== null) {
+            $alumnos[$f['id']]['promedios'][$f['cuatrimestre']] = (float) $f['promedio'];
+        }
+    }
+    // & : $a es la fila misma (no una copia), así se le puede agregar el final
+    foreach ($alumnos as &$a) {
+        $a['final'] = promedio_final($a['promedios']);
+    }
+    // unset(): corta el vínculo de $a con la última fila, para no pisarla sin querer después
+    unset($a);
+    return $alumnos;
+}
+
+// promedio_final(): el promedio de los cuatrimestres, o null si todavía falta alguno
+function promedio_final(array $promedios): ?float
+{
+    // Sin todos los cuatrimestres, no hay nota final (medio año no es un final)
+    if (count($promedios) < count(CUATRIMESTRES)) {
+        return null;
+    }
+    // array_sum(): suma los valores del array
+    return array_sum($promedios) / count($promedios);
+}
+
+// formato_promedio(): 6.33 se escribe '6,33' (coma decimal, como en Argentina)
+function formato_promedio(float $promedio): string
+{
+    return number_format($promedio, 2, ',', '');
+}
+
+// celda_csv(): si un texto empieza con = + - @, Excel lo tomaría como fórmula; se le agrega un apóstrofo
+function celda_csv(string $texto): string
+{
+    return preg_match('/^[=+\-@]/', $texto) === 1 ? "'" . $texto : $texto;
+}
