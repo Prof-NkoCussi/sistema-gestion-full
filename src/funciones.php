@@ -147,3 +147,50 @@ function verificar_csrf(): void
         pagina_error(403, 'El formulario no es válido o venció. Volvé a la página y probá otra vez.');
     }
 }
+
+
+// ALUMNOS //
+
+// leer_cursos(): los cursos de la base como [id => nombre]: [1 => '4° 1ª', …]
+// Sirven para el <select> del formulario y como lista blanca al validar
+function leer_cursos(PDO $pdo): array
+{
+    // FETCH_KEY_PAIR: la primera columna es la clave y la segunda, el valor
+    return $pdo->query('SELECT id, nombre FROM cursos ORDER BY anio, division')->fetchAll(PDO::FETCH_KEY_PAIR);
+}
+
+// leer_alumno(): arma el array del alumno con lo que vino del formulario
+function leer_alumno(array $origen): array
+{
+    return [
+        // en el DNI se sacan puntos y espacios: 50.987.654 → 50987654
+        'dni'      => str_replace(['.', ' '], '', limpiar($origen['dni'] ?? '')),
+        'apellido' => limpiar($origen['apellido'] ?? ''),
+        'nombre'   => limpiar($origen['nombre'] ?? ''),
+        // el curso llega como texto ('2'): leer_id() lo pasa a entero o null
+        'curso_id' => leer_id($origen, 'curso_id'),
+    ];
+}
+
+// validar_alumno(): revisa los datos; devuelve los errores (array vacío = todo bien)
+// $cursos: los cursos de la base, [id => nombre] (lista blanca)
+function validar_alumno(array $a, array $cursos): array
+{
+    $errores = [];
+    // 7 u 8 números, nada más (los puntos ya los sacó leer_alumno())
+    if (preg_match('/^\d{7,8}$/', $a['dni']) !== 1) {
+        $errores['dni'] = 'El DNI tiene que tener 7 u 8 números.';
+    }
+    // mb_strlen(): cuenta letras, no bytes (la ñ y las tildes ocupan 2 bytes)
+    if ($a['apellido'] === '' || mb_strlen($a['apellido']) > 60) {
+        $errores['apellido'] = 'El apellido es obligatorio (hasta 60 letras).';
+    }
+    if ($a['nombre'] === '' || mb_strlen($a['nombre']) > 60) {
+        $errores['nombre'] = 'El nombre es obligatorio (hasta 60 letras).';
+    }
+    // El curso tiene que ser uno de la base: un id inventado no pasa
+    if ($a['curso_id'] === null || !array_key_exists($a['curso_id'], $cursos)) {
+        $errores['curso_id'] = 'Elegí un curso de la lista.';
+    }
+    return $errores;
+}
