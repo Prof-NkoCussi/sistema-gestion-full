@@ -37,6 +37,7 @@ Incluye un sistema de **autenticación con tres roles de usuario** (admin, prece
 - **Promedios** de cada alumno en cada cuatrimestre y el **promedio final** (solo cuando están los dos cuatrimestres), con filtro por curso y **exportación a CSV** para Excel.
 - **Buscador en vivo** por apellido, nombre o DNI: mientras se escribe, le pregunta al servidor y redibuja la tabla. Encuentra «Gutiérrez» escribiendo «gutierrez».
 - **Token CSRF** en todos los formularios POST: un pedido armado fuera del sistema se rechaza con 403.
+- **Backup automático** de la base: `scripts/backup.sh` hace la copia con `mysqldump`, la comprime y borra las de más de 7 días; `cron` lo corre todos los días.
 
 ## Demo
 
@@ -98,7 +99,9 @@ sistema-gestion-full/
 ├── database/
 │   ├── escuela.sql           esquema de la base y datos de prueba
 │   └── demo_xampp.sql        usuario de la base y usuarios de demo, solo para XAMPP
-├── scripts/crear_usuario.php crea usuarios desde la terminal, con password_hash
+├── scripts/
+│   ├── crear_usuario.php     crea usuarios desde la terminal, con password_hash
+│   └── backup.sh             copia de seguridad de la base (mysqldump + cron)
 ├── src/
 │   ├── conexion.php          conectar(): la conexión PDO
 │   ├── funciones.php         sesiones y roles, CSRF, validaciones, promedios, CSV, JSON
@@ -185,6 +188,37 @@ Requisitos: Apache 2.4, PHP 8.1 o superior con `pdo_mysql` (paquete `php-mysql`)
    php scripts/crear_usuario.php docente1 docente
    ```
 7. Abrir `http://IP-DEL-SERVIDOR/escuela/`.
+
+## Backup automático
+
+`scripts/backup.sh` copia la base `escuela` con `mysqldump --single-transaction` (copia consistente, sin bloquear el sistema), la comprime con gzip, comprueba el comprimido y borra las copias de más de 7 días. Las copias quedan en `/var/backups/escuela`, que solo puede leer root, y cada resultado queda en el registro del sistema.
+
+1. Instalar el script como root (cron corre una copia que solo root puede modificar):
+   ```bash
+   sudo install -m 755 -o root -g root scripts/backup.sh /usr/local/sbin/backup-escuela.sh
+   ```
+2. Probarlo a mano:
+   ```bash
+   sudo /usr/local/sbin/backup-escuela.sh
+   ```
+3. Programarlo con `sudo crontab -e`, todos los días a las 2:30:
+   ```
+   30 2 * * * /usr/local/sbin/backup-escuela.sh
+   ```
+4. Ver el resultado de cada copia:
+   ```bash
+   journalctl -t backup-escuela
+   ```
+
+**Restaurar una copia** en una base de prueba, sin tocar la real (el archivo no trae `CREATE DATABASE`):
+
+```bash
+sudo mysql -e "CREATE DATABASE escuela_prueba CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+sudo gunzip -c /var/backups/escuela/escuela_AAAA-MM-DD_HHMM.sql.gz | sudo mysql escuela_prueba
+sudo mysql -e "CHECKSUM TABLE escuela.notas, escuela_prueba.notas"
+```
+
+Si los dos números coinciden, la copia tiene los mismos datos. La base usa `utf8mb4_unicode_ci`, así que la copia también se puede cargar en MariaDB (XAMPP).
 
 ## Licencia
 
