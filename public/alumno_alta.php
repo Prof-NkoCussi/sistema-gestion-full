@@ -39,6 +39,8 @@ $accion = 'alumno_alta.php';
 $boton = 'Guardar alumno';
 
 $titulo = 'Nuevo alumno';
+// validar.js: revisa el formulario en el navegador antes de enviarlo
+$scripts = ['js/validar.js'];
 require __DIR__ . '/../src/plantillas/header.php';
 ?>
 <h1>Nuevo alumno</h1>

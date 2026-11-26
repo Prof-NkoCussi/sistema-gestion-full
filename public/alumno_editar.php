@@ -53,6 +53,8 @@ $accion = 'alumno_editar.php?id=' . $id;
 $boton = 'Guardar cambios';
 
 $titulo = 'Modificar alumno';
+// validar.js: revisa el formulario en el navegador antes de enviarlo
+$scripts = ['js/validar.js'];
 require __DIR__ . '/../src/plantillas/header.php';
 ?>
 <h1>Modificar alumno</h1>
