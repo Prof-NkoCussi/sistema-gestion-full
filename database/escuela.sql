@@ -7,8 +7,9 @@ SET NAMES utf8mb4;
 
 DROP DATABASE IF EXISTS escuela;
 -- utf8mb4: guarda bien tildes, ñ y cualquier carácter
--- _ai_ci: al comparar no distingue tildes ni mayúsculas ('gutierrez' = 'Gutiérrez')
-CREATE DATABASE escuela CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+-- unicode_ci: al comparar no distingue tildes ni mayúsculas ('gutierrez' = 'Gutiérrez')
+-- Funciona en MySQL y en MariaDB (la de XAMPP); utf8mb4_0900_ai_ci existe solo en MySQL 8
+CREATE DATABASE escuela CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE escuela;
 
 -- Usuarios del sistema (se usan para el login); se crean con scripts/crear_usuario.php

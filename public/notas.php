@@ -84,11 +84,12 @@ if ($elegido && $_SERVER['REQUEST_METHOD'] === 'POST') {
     // Con un solo error no se guarda nada: se corrige y se vuelve a enviar
     if (!$errores) {
         // Si la nota ya existe (índice UNIQUE alumno + materia + cuatrimestre), se actualiza
-        // AS nueva: el nombre de la fila que se quiso insertar, para usar su nota
+        // :nota_nueva lleva el mismo valor que :nota: en una consulta preparada nativa
+        // cada marcador se usa una sola vez. Así funciona en MySQL y en MariaDB (XAMPP)
         $insertar = $pdo->prepare(
             'INSERT INTO notas (alumno_id, materia_id, cuatrimestre, nota)
-             VALUES (:alumno, :materia, :cuatrimestre, :nota) AS nueva
-             ON DUPLICATE KEY UPDATE nota = nueva.nota'
+             VALUES (:alumno, :materia, :cuatrimestre, :nota)
+             ON DUPLICATE KEY UPDATE nota = :nota_nueva'
         );
         $borrar = $pdo->prepare(
             'DELETE FROM notas WHERE alumno_id = :alumno AND materia_id = :materia AND cuatrimestre = :cuatrimestre'
@@ -102,8 +103,8 @@ if ($elegido && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($nota === null) {
                     $borrar->execute($datos);
                 } else {
-                    // + agrega la clave nota al array
-                    $insertar->execute($datos + ['nota' => $nota]);
+                    // + agrega las claves nota y nota_nueva al array
+                    $insertar->execute($datos + ['nota' => $nota, 'nota_nueva' => $nota]);
                 }
             }
             // commit(): recién acá los cambios quedan guardados
