@@ -25,6 +25,8 @@ $mensajes = [
 $aviso = $mensajes[limpiar($_GET['ok'] ?? '')] ?? null;
 
 $titulo = 'Alumnos';
+// buscador.js: filtra la tabla mientras se escribe
+$scripts = ['js/buscador.js'];
 require __DIR__ . '/../src/plantillas/header.php';
 ?>
 <div class="titular">
@@ -37,7 +39,13 @@ require __DIR__ . '/../src/plantillas/header.php';
     <p class="aviso aviso--ok" role="status"><?= e($aviso) ?></p>
 <?php endif; ?>
 
-<p class="bajada" id="cuenta"><?= count($alumnos) ?> alumnos</p>
+<div class="campo buscador">
+    <label for="buscador">Buscar por apellido, nombre o DNI</label>
+    <!-- type="search": en el celular muestra la tecla «buscar» y una cruz para borrar -->
+    <input id="buscador" type="search" autocomplete="off" placeholder="Ej.: gutierrez">
+</div>
+<!-- aria-live: cuando buscador.js cambia la cuenta, el lector de pantalla la lee -->
+<p class="bajada" id="cuenta" aria-live="polite"><?= count($alumnos) ?> alumnos</p>
 <div class="tabla-scroll">
     <table class="tabla" id="tabla-alumnos">
         <thead>
