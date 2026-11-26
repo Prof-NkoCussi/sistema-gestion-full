@@ -194,3 +194,29 @@ function validar_alumno(array $a, array $cursos): array
     }
     return $errores;
 }
+
+
+// NOTAS //
+
+// Los cuatrimestres del año como [número => cómo se muestra]; también es la lista blanca
+const CUATRIMESTRES = [1 => '1.er cuatrimestre', 2 => '2.º cuatrimestre'];
+
+// materias_del_curso(): las materias del año de ese curso, como [id => nombre]
+// Ejemplo: 6° 1ª da las materias de 6.º año (Programación III, Base de Datos II, Redes II)
+function materias_del_curso(PDO $pdo, int $curso_id): array
+{
+    // JOIN por el año: la materia es del curso si m.anio coincide con c.anio
+    $stmt = $pdo->prepare('SELECT m.id, m.nombre FROM materias AS m
+                           JOIN cursos AS c ON c.anio = m.anio
+                           WHERE c.id = ? ORDER BY m.id');
+    $stmt->execute([$curso_id]);
+    return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+}
+
+// leer_nota(): una nota escrita en el formulario como entero del 1 al 10, o null si no sirve
+// '8' da 8; '11', '0', '7.5' o 'ocho' dan null
+function leer_nota(string $texto): ?int
+{
+    $nota = filter_var($texto, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 10]]);
+    return $nota === false ? null : $nota;
+}

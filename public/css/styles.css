@@ -121,6 +121,16 @@ h1, h2 { color: var(--azul); line-height: 1.2; }
     border: 2px solid var(--linea); border-radius: 8px; background: var(--blanco);
 }
 
+/* ---------- Carga de notas ---------- */
+.planilla { margin-top: 8px; }
+.celda-nota .error { margin-left: 10px; }   /* el aviso, al lado de la casilla */
+.nota {
+    width: 5.5em; font: inherit; padding: 6px 8px; text-align: center;
+    border: 2px solid var(--linea); border-radius: 8px; background: var(--blanco);
+}
+.nota:focus { outline: 3px solid var(--celeste); border-color: var(--acento); }
+.nota[aria-invalid="true"] { border-color: var(--error); background: var(--error-claro); }
+
 /* ---------- Pie ---------- */
 .pie { text-align: center; color: var(--gris); font-size: .9rem; padding: 20px 16px; border-top: 1px solid var(--linea); }
 .pie p { margin: 4px 0; }
