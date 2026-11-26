@@ -291,3 +291,18 @@ function celda_csv(string $texto): string
 {
     return preg_match('/^[=+\-@]/', $texto) === 1 ? "'" . $texto : $texto;
 }
+
+
+// JSON //
+
+// responder_json(): manda un array como JSON, con su código de estado, y termina
+// Lo usan las páginas que contesta JavaScript (fetch), no el navegador directamente
+function responder_json(array $datos, int $codigo = 200): never
+{
+    http_response_code($codigo);
+    // La cabecera avisa qué llega: JSON en UTF-8, no una página HTML
+    header('Content-Type: application/json; charset=utf-8');
+    // JSON_UNESCAPED_UNICODE: escribe "Muñoz" y no "Mu\u00f1oz"
+    echo json_encode($datos, JSON_UNESCAPED_UNICODE);
+    exit;
+}

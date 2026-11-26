@@ -25,7 +25,7 @@ $mensajes = [
 $aviso = $mensajes[limpiar($_GET['ok'] ?? '')] ?? null;
 
 $titulo = 'Alumnos';
-// buscador.js: filtra la tabla mientras se escribe
+// buscador.js: busca en el servidor mientras se escribe (fetch + JSON)
 $scripts = ['js/buscador.js'];
 require __DIR__ . '/../src/plantillas/header.php';
 ?>
@@ -47,7 +47,8 @@ require __DIR__ . '/../src/plantillas/header.php';
 <!-- aria-live: cuando buscador.js cambia la cuenta, el lector de pantalla la lee -->
 <p class="bajada" id="cuenta" aria-live="polite"><?= count($alumnos) ?> alumnos</p>
 <div class="tabla-scroll">
-    <table class="tabla" id="tabla-alumnos">
+    <!-- data-total y data-admin: datos para buscador.js (cuántos hay y si se muestra la baja) -->
+    <table class="tabla" id="tabla-alumnos" data-total="<?= count($alumnos) ?>" data-admin="<?= tiene_rol(['admin']) ? '1' : '0' ?>">
         <thead>
             <tr>
                 <th scope="col">Apellido y nombre</th>
