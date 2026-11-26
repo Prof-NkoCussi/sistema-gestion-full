@@ -1,6 +1,28 @@
-# Gestión Escolar
+# Sistema de Gestión Escolar
 
-Sistema web de gestión escolar para el **Técnico en Programación** (4.º a 7.º año): alumnos, cursos, materias y notas por cuatrimestre. Está hecho con **PHP**, **MySQL** y **JavaScript** sobre un servidor **LAMP** (Linux, Apache, MySQL, PHP). Tiene **login con tres roles**, el **ABM de alumnos**, la **carga de notas** por curso, materia y cuatrimestre, los **promedios** con exportación a **CSV** y un **buscador en vivo** que consulta al servidor con `fetch` y JSON.
+<!-- TECNOLOGÍAS -->
+![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0%2B-4479A1?logo=mysql&logoColor=white)
+![PDO](https://img.shields.io/badge/PDO-Database-4479A1)
+![Apache](https://img.shields.io/badge/Apache-2.4-D22128?logo=apache&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+
+<!-- FUNCIONALIDADES -->
+![CRUD](https://img.shields.io/badge/CRUD-Implementado-2E8B57)
+![Security](https://img.shields.io/badge/Security-CSRF%20%7C%20SQL%20Injection%20%7C%20XSS-2E8B57)
+![Authentication](https://img.shields.io/badge/Auth-Session%20%7C%20Roles-6C63FF)
+![Live Search](https://img.shields.io/badge/Live%20Search-Fetch%20%7C%20JSON-0369A1)
+![Export](https://img.shields.io/badge/Export-CSV%20%7C%20Excel-217346)
+
+## Descripción
+
+Sistema web de gestión escolar para la especialidad **Técnico en Programación** (4.º a 7.º año). Permite gestionar los alumnos de cada curso, las materias de cada año y las notas por cuatrimestre.
+
+Desarrollado con **PHP**, **MySQL** y **JavaScript**, sobre una arquitectura **LAMP** (Linux, Apache, MySQL y PHP).
+
+Incluye un sistema de **autenticación con tres roles de usuario** (admin, preceptor y docente), operaciones **ABM de alumnos** (alta, baja y modificación), **carga de notas** por curso, materia y cuatrimestre, **promedios** con exportación en formato **CSV** compatible con Microsoft Excel, y un **buscador en vivo** que consulta al servidor con `fetch` y JSON.
 
 > Proyecto de práctica: todos los datos son ficticios.
 
